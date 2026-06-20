@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+target/
+
+# Build outputs
+dist/
+dist-ssr/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/binaries/
+*.msi
+*.exe
+*.appinstaller
+*.msix
+
+# Local/editor state
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.cache/
+.vite/
+.tauri/
+coverage/
+tmp/
+temp/
+
+# Secrets and local runtime artifacts
+.env
+.env.*
+!.env.example
+.envrc
+.direnv/
+*.local
+*.wav
+*.mp3
+*.m4a
+recordings/
+logs/
