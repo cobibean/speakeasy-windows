@@ -33,6 +33,16 @@ npm run build
 
 For the Tauri shell, use `npm run tauri -- dev` during development. Before human Windows testing, use `npm run tauri -- build --no-bundle` to verify the native shell without treating installer packaging as release-ready.
 
+## Windows Packaging
+
+On Windows, build the installer with one command:
+
+```sh
+npm run package:windows
+```
+
+This uses Tauri's NSIS bundle target. The generated installer still needs human Windows testing before release.
+
 ## Configuration
 
 Do not commit secrets, local environment files, credentials, recordings, logs, packaged builds, or installer outputs.

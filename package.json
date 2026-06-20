@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "package:windows": "tauri build --ci --bundles nsis",
     "tauri": "tauri",
     "test": "vitest run"
   },
