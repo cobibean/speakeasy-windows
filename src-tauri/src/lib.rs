@@ -1,6 +1,7 @@
 mod pipeline;
 mod settings;
 
+use base64::{engine::general_purpose::STANDARD, Engine as _};
 use std::sync::Mutex;
 
 use pipeline::{PipelineResult, PipelineSettings};
@@ -15,6 +16,13 @@ struct AppState {
 #[derive(Debug, Default)]
 struct RecorderState {
     is_recording: bool,
+}
+
+#[derive(Debug, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct AudioRequest {
+    audio_base64: String,
+    mime_type: String,
 }
 
 impl RecorderState {
@@ -70,7 +78,10 @@ fn start_hold_to_talk(state: tauri::State<'_, AppState>) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn stop_and_run_pipeline(state: tauri::State<'_, AppState>) -> Result<PipelineResult, String> {
+async fn stop_and_run_pipeline(
+    request: AudioRequest,
+    state: tauri::State<'_, AppState>,
+) -> Result<PipelineResult, String> {
     {
         let mut recorder = state
             .recorder
@@ -84,16 +95,25 @@ fn stop_and_run_pipeline(state: tauri::State<'_, AppState>) -> Result<PipelineRe
         .lock()
         .map(|settings| settings.clone())
         .map_err(|_| "Settings state is unavailable".to_string())?;
+    let audio_bytes = STANDARD
+        .decode(request.audio_base64)
+        .map_err(|_| "Captured audio could not be decoded.".to_string())?;
 
-    // Windows placeholder:
-    // Future integration points are microphone bytes -> STT provider -> optional cleanup
-    // -> active-window paste via Windows APIs. Until those are tested on Windows, this
-    // returns deterministic local text and never contacts a provider.
-    Ok(pipeline::run_placeholder_pipeline(PipelineSettings {
-        cleanup_enabled: settings.cleanup_enabled,
-        cleanup_strength: settings.cleanup_strength,
-        paste_after_transcription: settings.paste_after_transcription,
-    }))
+    // Windows testing still needs to validate microphone permission prompts and active-window paste.
+    // The provider path is real BYOK Groq, but paste remains clipboard-first until Windows APIs are wired.
+    pipeline::run_groq_pipeline(
+        PipelineSettings {
+            groq_api_key: settings.groq_api_key,
+            stt_model: settings.stt_model,
+            cleanup_enabled: settings.cleanup_enabled,
+            cleanup_strength: settings.cleanup_strength,
+            cleanup_model: settings.cleanup_model,
+            paste_after_transcription: settings.paste_after_transcription,
+        },
+        audio_bytes,
+        request.mime_type,
+    )
+    .await
 }
 
 pub fn run() {

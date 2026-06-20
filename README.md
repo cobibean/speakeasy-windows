@@ -10,13 +10,13 @@ Speakeasy is intentionally narrow:
 - Hold to talk
 - Transcribe speech
 - Optionally clean up the transcript
-- Paste the result into the active Windows app
+- Copy the result for paste
 
 The initial Windows work should stay focused on that loop before adding broader product surface area.
 
 ## Status
 
-This repository is at the early scaffold stage. The current app stack is Tauri v2, React, TypeScript, and Vite. Windows-native behavior still needs real Windows testing before release.
+This repository is at the early Windows test stage. The current app stack is Tauri v2, React, TypeScript, and Vite. The app can record microphone audio, send it to Groq with a user-supplied API key, optionally clean up the transcript, and copy the result to the clipboard. Windows-native active-app paste still needs follow-up testing and integration.
 
 ## Local Setup
 
@@ -43,11 +43,21 @@ npm run package:windows
 
 This uses Tauri's NSIS bundle target. The generated installer still needs human Windows testing before release.
 
+## Three-Step Test
+
+On a Windows machine:
+
+1. Run `npm run package:windows`.
+2. Install and open the generated Speakeasy installer.
+3. Enter a Groq API key in the app, press Start, speak, then press Stop.
+
+The app sends the captured audio directly to Groq from the local machine. The key must never be committed or shared in issues, logs, screenshots, or test notes.
+
 ## Configuration
 
 Do not commit secrets, local environment files, credentials, recordings, logs, packaged builds, or installer outputs.
 
-If local configuration is needed, copy `.env.example` to a local ignored env file and fill values on your machine only.
+For the current tester flow, enter the Groq API key in the app. Do not put real keys in `.env.example`, docs, screenshots, logs, issues, or commits.
 
 ## Repository Boundary
 

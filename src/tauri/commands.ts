@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { defaultSettings } from "../domain/state";
-import type { AppSettings, PipelineResult } from "../domain/types";
+import type { AppSettings, CapturedAudio, PipelineResult } from "../domain/types";
 
 const isTauriRuntime = "__TAURI_INTERNALS__" in window;
 
@@ -28,11 +28,11 @@ export async function startHoldToTalk(): Promise<void> {
   await invoke("start_hold_to_talk");
 }
 
-export async function stopAndRunPipeline(): Promise<PipelineResult> {
+export async function stopAndRunPipeline(audio: CapturedAudio): Promise<PipelineResult> {
   if (!isTauriRuntime) {
     return {
-      transcript: "Mock transcript from the Windows prototype loop.",
-      polishedText: "Mock transcript from the Windows prototype loop.",
+      transcript: "Browser preview transcript. Run the packaged app to call Groq.",
+      polishedText: "Browser preview transcript. Run the packaged app to call Groq.",
       pasted: false,
       usedCleanup: defaultSettings.cleanupEnabled,
       placeholder: true,
@@ -40,5 +40,5 @@ export async function stopAndRunPipeline(): Promise<PipelineResult> {
     };
   }
 
-  return invoke<PipelineResult>("stop_and_run_pipeline");
+  return invoke<PipelineResult>("stop_and_run_pipeline", { request: audio });
 }

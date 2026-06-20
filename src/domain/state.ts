@@ -2,10 +2,13 @@ import type { AppSettings, AppSnapshot, DictationStatus, PipelineResult } from "
 
 export const defaultSettings: AppSettings = {
   holdToTalkHotkey: "Ctrl+Alt+Space",
+  groqApiKey: "",
+  sttModel: "whisper-large-v3-turbo",
   cleanupEnabled: true,
   cleanupStrength: "standard",
+  cleanupModel: "openai/gpt-oss-120b",
   pasteAfterTranscription: true,
-  providerMode: "mock",
+  providerMode: "groq",
 };
 
 export const createInitialSnapshot = (settings: AppSettings = defaultSettings): AppSnapshot => ({
@@ -21,7 +24,7 @@ export type AppAction =
   | { type: "settingsSaved"; settings: AppSettings }
   | { type: "statusChanged"; status: DictationStatus }
   | { type: "pipelineCompleted"; result: PipelineResult }
-  | { type: "failed"; message: string }
+  | { type: "failed"; message: string; status?: DictationStatus }
   | { type: "resetError" };
 
 export function appReducer(state: AppSnapshot, action: AppAction): AppSnapshot {
@@ -40,7 +43,7 @@ export function appReducer(state: AppSnapshot, action: AppAction): AppSnapshot {
         errorMessage: null,
       };
     case "failed":
-      return { ...state, status: "error", errorMessage: action.message };
+      return { ...state, status: action.status ?? "error", errorMessage: action.message };
     case "resetError":
       return { ...state, errorMessage: null, status: state.status === "error" ? "idle" : state.status };
     default:

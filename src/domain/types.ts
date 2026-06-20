@@ -12,10 +12,13 @@ export type CleanupStrength = "light" | "standard" | "strong";
 
 export interface AppSettings {
   holdToTalkHotkey: string;
+  groqApiKey: string;
+  sttModel: string;
   cleanupEnabled: boolean;
   cleanupStrength: CleanupStrength;
+  cleanupModel: string;
   pasteAfterTranscription: boolean;
-  providerMode: "mock" | "manual";
+  providerMode: "mock" | "groq";
 }
 
 export interface AppSnapshot {
@@ -36,3 +39,8 @@ export interface PipelineResult {
 }
 
 export type PipelineStage = "transcribing" | "polishing" | "pasting";
+
+export interface CapturedAudio {
+  audioBase64: string;
+  mimeType: string;
+}
